@@ -62,3 +62,127 @@ mergedf1.head()
 mergedf1
 
 mergedf1.set_index('Year')
+
+## Exploratory Data Analysis
+mergedf1.describe(include=object)
+mergedf1.describe()
+
+mergedf1["City"].unique()
+
+duplicate_rows_df = mergedf1[mergedf1.duplicated()] 
+print("Number of duplicate rows: ", duplicate_rows_df.shape)
+
+print(mergedf1.isnull().sum())
+
+## use of fillna() to take average of previous four years for each city to fill null value with mean of previous four years. Source: https://stackoverflow.com/questions/58507317/how-to-fillna-impute-by-using-the-mean-of-the-last-3-rows-in-the-same-column
+
+mergedf1.fillna(mergedf1.rolling(4, min_periods=1).mean().shift()) 
+
+## using a boxplot to gain insight into the data 
+
+sns.boxplot(x=mergedf1['Annual No. of Passengers (Thousand)']) 
+
+plt.title("Annual No. of Passengers Across Seven European Cities", fontsize=14)
+plt.xlabel("No. of Passengers (Thousand)", fontsize=12)
+
+## plotting data to gain insights into the data set
+
+fig, ax = plt.subplots(figsize=(30, 15))
+sns.barplot(mergedf1, x="Year", y="Annual No. of Passengers (Thousand)", hue="City", width=.9)
+
+plt.grid(True, color = "grey", linewidth = "1", linestyle = "-")
+plt.legend(fontsize="22", loc ="upper left")
+
+plt.title("Annual Number of Passengers Across Seven European Cities", fontsize=36)
+plt.xlabel("Year", fontsize=28)
+plt.ylabel("Number of Passengers (Thousand)", fontsize=28)
+plt.xticks(fontsize=20) ## https://stackabuse.com/rotate-axis-labels-in-matplotlib/
+plt.yticks(fontsize=20)
+
+## plotting data to gain insights into the data set
+
+fig, ax = plt.subplots(figsize=(30, 15))
+sns.barplot(mergedf1, x="Year", y="Population (thousand)", hue="City", width=.9)
+
+plt.grid(True, color = "grey", linewidth = "1", linestyle = "-")
+plt.legend(fontsize="22", loc ="upper left")
+
+plt.title("Population Across Seven European Cities", fontsize=36)
+plt.xlabel("Year", fontsize=28)
+plt.ylabel("Number of Passengers (Thousand)", fontsize=28)
+plt.xticks(fontsize=20) ## https://stackabuse.com/rotate-axis-labels-in-matplotlib/
+plt.yticks(fontsize=20)
+
+## plotting data to gain insights into the data set
+
+fig, ax = plt.subplots(figsize=(30, 15))
+sns.barplot(mergedf1, x="Year", y="Congestion (%)", hue="City", width=.9)
+
+plt.grid(True, color = "grey", linewidth = "1", linestyle = "-")
+plt.legend(fontsize="22", loc ="upper left")
+
+plt.title("Congestion Across Seven European Cities", fontsize=36)
+plt.xlabel("Year", fontsize=28)
+plt.ylabel("Number of Passengers (Thousand)", fontsize=28)
+plt.xticks(fontsize=20) ## https://stackabuse.com/rotate-axis-labels-in-matplotlib/
+plt.yticks(fontsize=20)
+
+sns.scatterplot(data=mergedf1, x="Annual No. of Passengers (Thousand)", y="Congestion (%)", hue="City")
+
+plt.grid(True, color = "grey", linewidth = "1", linestyle = "-")
+
+plt.title("Annual Number of Passengers vs Congestion (%)", fontsize=14)
+plt.xlabel("Annual No. of Passengers (Thousand)", fontsize=10)
+plt.ylabel("Congestion (%)", fontsize=10)
+plt.xticks(fontsize=10) ## https://stackabuse.com/rotate-axis-labels-in-matplotlib/
+plt.yticks(fontsize=10)
+
+sns.scatterplot(data=mergedf1, x="Price of One Litre of Diesel (Euro)" , y="Congestion (%)", hue="City")
+
+plt.grid(True, color = "grey", linewidth = "1", linestyle = "-")
+
+plt.title("Price of One Litre of Diesel (Euro) vs Congestion (%)", fontsize=14)
+plt.xlabel("Price of One Litre of Diesel (Euro)", fontsize=10)
+plt.ylabel("Congestion (%)", fontsize=10)
+plt.xticks(fontsize=10) ## https://stackabuse.com/rotate-axis-labels-in-matplotlib/
+plt.yticks(fontsize=10)
+
+sns.scatterplot(data=mergedf1, x="Annual No. of Passengers (Thousand)", y="Population (thousand)", hue="City")
+
+plt.grid(True, color = "grey", linewidth = "1", linestyle = "-")
+
+plt.title("Annual No. of Passengers (Thousand) vs Population (thousand)", fontsize=14)
+plt.xlabel("Annual No. of Passengers (Thousand)", fontsize=10)
+plt.ylabel("Population (thousand)", fontsize=10)
+plt.xticks(fontsize=10) ## https://stackabuse.com/rotate-axis-labels-in-matplotlib/
+plt.yticks(fontsize=10)
+
+sns.scatterplot(data=mergedf1, x="Congestion (%)", y="Population (thousand)", hue="City")
+
+plt.grid(True, color = "grey", linewidth = "1", linestyle = "-")
+
+plt.title("Congestion (%) vs Population (thousand)", fontsize=14)
+plt.xlabel("Congestion (%)", fontsize=10)
+plt.ylabel("Population (thousand)", fontsize=10)
+plt.xticks(fontsize=10) ## https://stackabuse.com/rotate-axis-labels-in-matplotlib/
+plt.yticks(fontsize=10)
+
+mergedf1.corr()
+
+## plotting data to gain insights into the data set
+
+sns.relplot(data=mergedf1, x="Year", y="Annual No. of Passengers (Thousand)", hue="City", kind="line", height=8)
+
+plt.grid(True, color = "grey", linewidth = "1", linestyle = "-") ## Source https://www.geeksforgeeks.org/grids-in-matplotlib/
+
+plt.title("Annual No. of Passengers Across Seven European Cities", fontsize=14)
+plt.xlabel("Year", fontsize=12)
+plt.ylabel("Annual No. of Passengers (thousand)", fontsize=12)
+
+sns.histplot(data=mergedf1, x="Congestion (%)", kde=True)
+
+sns.histplot(data=mergedf1, x="Price of One Litre of Diesel (Euro)", kde=True)
+
+
+
+
