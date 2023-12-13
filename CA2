@@ -1,0 +1,63 @@
+# MSc Data Analytics CA2
+## Data Visualisation and Preparation
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import math
+
+df_UN = pd.read_csv("UNDataset.csv")
+
+df_UN.head()
+
+df_UN["City"].unique()
+
+df_UN.sort_values(["City"])
+
+newdf = df_UN.loc[(df_UN["City"] == 'Dublin') | 
+                  (df_UN["City"] == 'Porto') | 
+                  (df_UN["City"] == 'Glasgow') | 
+                  (df_UN["City"] == 'Manchester')| 
+                  (df_UN["City"] == 'Edinburgh')| 
+                  (df_UN["City"] == 'Copenhagen')|
+                 (df_UN["City"] == 'Zurich')]
+newdf
+
+newdf["City"].unique()
+
+newdf1 = newdf.loc[(newdf["Type"] == 'Tram')|
+                 (newdf["Type"] == 'Metro')]
+newdf1
+
+newdf2 = newdf1.loc[(newdf1["Variable"] == 'Pass')]
+
+newdf3 = newdf2.loc[(newdf2["Year"] >= 2018)]
+
+newdf3.shape
+
+df_final=newdf3.drop(columns=['Countrycode','Type', 'Variable', 'Note'])
+
+df_final.head()
+
+df_final= df_final.rename(columns={"Value (Thousands of Passengers)":"Annual No. of Passengers (Thousand)"})
+df_final.head()
+
+df_final.shape
+
+df_final.sort_values(["City"])
+
+df_final.shape
+
+df_final2 = pd.read_csv("ManualData.csv")
+
+df_final2.sort_values(["City"])
+
+df_final2
+
+mergedf1 = pd.merge(df_final, df_final2, on = ["City", "Year"])
+mergedf1.head()
+
+mergedf1
+
+mergedf1.set_index('Year')
