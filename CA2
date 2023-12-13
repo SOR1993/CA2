@@ -7,6 +7,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import math
 
+## Data Extraction and Manipulation
 df_UN = pd.read_csv("UNDataset.csv")
 
 df_UN.head()
