@@ -244,6 +244,10 @@ X1 = mergedf.iloc[:,3:4].values
 stats.t.interval(confidence = 0.95, df=len(X1), loc=np.mean(X1), scale = stats.sem(X1))
 At 95% confidence level, the average congestion level across the seven countries considered will be between 26.75% and 32.11% people.
 
+## Normal Distribution
+from scipy import stats
+stats.norm.interval(0.95, loc=np.mean(X), scale=stats.sem(X))
+Values for normal distribution are very similar to that of the Student T's
 
 
 
