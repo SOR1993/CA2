@@ -205,21 +205,39 @@ sns.histplot(data=mergedf, x="Congestion (%)", kde=True)
 
 sns.histplot(data=mergedf, x="Annual No. of Passengers (Thousand)", kde=True)
 
-## Hypothesis Test (Z-Test)
+sns.histplot(data=mergedf, x="Population", kde=True)
+
+plt.title("Histogram Showing Population of Seven European Cities 2018-2022", fontsize=14)
+
 ### Inferential Statistics
 
+## Hypothesis Test (Z-Test)
 X = mergedf["Annual No. of Passengers (Thousand)"]
 passenger_std = X.std()
-#### H0: mu = 5000, H1: mu > 5000 : As the mean of the annual number of passengers is 58071 the alternative hypothesis should be greater than 5000.
-mu = 5000
-
+#### H0: mu = 58071, H1: mu > 58071 : As the mean of the annual number of passengers is 58071 the alternative hypothesis should be greater than 5000.
+mu = 58071
 z_score, p_value = weightstats.ztest(X, value = mu, ddof=1, alternative = 'larger')
 z_score
 p_value
+As the p-value is greater than alpha, we reject the null hypothesis and accept the alternative hypothesis that mu > 58071. 
+Therefore, we have enough evidence at 5% confidence interval to suggest that the average annual number of passengers will be greater than 58,071,000 across the seven cities.
+X = mergedf["Congestion"]
+congestion_std1 = X.std()
+## H0: mu = 29.42, H1: mu > 29.42 : As the mean of the annual number of passengers is 58071 the alternative hypothesis should be greater than 5000.
+mu = 29.42
+z_score, p_value = weightstats.ztest(X, value = mu, ddof=1, alternative = 'larger')
+z_score
+p_value
+As the p-value is greater than alpha we accept the null hypothesis and reject the alternative hypothesis that mu > 29.42 
+Therefore, we have enough evidence at 5% confidence interval to suggest that the average congestion level across the seven cities will be 29.42
 
-As the p-value is less than alpha we reject the null hypothesis and accept the alternative hypothesis that mu > 5000. Therefore, we have enough evidence to suggest that the annual number of passengers will be greater than 50,000,000 per year in any of the cities tested.
 
-### Parametric/Non Parametric Testing
+
+
+
+
+
+## Parametric/Non Parametric Testing
 from scipy import stats
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
