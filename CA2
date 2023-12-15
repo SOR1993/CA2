@@ -229,4 +229,64 @@ mergedf
 mergedf = mergedf.rename(columns={"Annual No. of Passengers (Thousand)":"Passengers", "Population (thousand)":"Population", "Congestion (%)":"Congestion"})
 mergedf
 
+## Sharpiro Wilk Test- Checking the conditions for ANOVA
+#QQ-plot
+stats.probplot(mergedf.Passengers, plot = plt)
+plt.figure()
+## Sharpiro Wil Test to test Normality of Data
+
+## H0: Data comes from normal dist
+## H1: Data does NOT come from normal dist
+
+stats.shapiro(mergedf.Passengers[mergedf.City=="Dublin"])
+## p_value is greater than alpha therefore null hypothesis should be accepted.
+## Evidence suggests that data for Dublin comes from normal distribution
+stats.shapiro(mergedf.Passengers[mergedf.City=="Copenhagen"])
+stats.shapiro(mergedf.Passengers[mergedf.City=="Porto"])
+stats.shapiro(mergedf.Passengers[mergedf.City=="Zurich"])
+stats.shapiro(mergedf.Passengers[mergedf.City=="Glasgow"])
+stats.shapiro(mergedf.Passengers[mergedf.City=="Edinburgh"])
+stats.shapiro(mergedf.Passengers[mergedf.City=="Manchester"])
+## As evidenced above by plot and p_value test, data for Zurich is NOT normally distributed
+
+#QQ-plot
+stats.probplot(mergedf.Congestion, plot = plt)
+plt.figure()
+
+stats.shapiro(mergedf.Congestion[mergedf.City=="Dublin"])
+## p_value is greater than alpha therefore null hypothesis should be accepted.
+## Evidence suggests that data for Dublin comes from normal distribution
+stats.shapiro(mergedf.Congestion[mergedf.City=="Copenhagen"])
+stats.shapiro(mergedf.Congestion[mergedf.City=="Porto"])
+stats.shapiro(mergedf.Congestion[mergedf.City=="Zurich"])
+stats.shapiro(mergedf.Congestion[mergedf.City=="Manchester"])
+stats.shapiro(mergedf.Congestion[mergedf.City=="Edinburgh"])
+stats.shapiro(mergedf.Congestion[mergedf.City=="Glasgow"])
+
+dublin = mergedf.Congestion[mergedf.City=="Dublin"]
+copenhagen = mergedf.Congestion[mergedf.City=="Copenhagen"]
+porto = mergedf.Congestion[mergedf.City=="Porto"]
+zurich = mergedf.Congestion[mergedf.City=="Zurich"]
+manchester = mergedf.Congestion[mergedf.City=="Manchester"]
+glasgow = mergedf.Congestion[mergedf.City=="Glasgow"]
+edinburgh = mergedf.Congestion[mergedf.City=="Edinburgh"]
+
+## ANOVA (One Way)
+## Homogenity of the variances ---> Levene Test
+## H0: the variances are equal
+## H1: the variances are not equal
+from scipy.stats import levene
+levene(dublin, copenhagen, porto, zurich, edinburgh, manchester, glasgow, center = 'mean')
+## accept null hypothesis as p_value is greater than alpha
+## H0: muDublin = muCopenhgen = muZurich = muPorto = muManchester = muGlasgow = muEdinburgh
+## H1: there are at least 2 mu which are different
+
+## we analyse congestion based on city
+model = ols('Congestion~City', data=mergedf).fit()
+aov = sm.stats.anova_lm(model, type=2)
+print(aov)
+## therefore as PR(>F) value which is our p_value is less than alpha then we reject the null hypothesis.
+
+
+
 
