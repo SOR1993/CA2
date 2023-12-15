@@ -231,7 +231,18 @@ p_value
 As the p-value is greater than alpha we accept the null hypothesis and reject the alternative hypothesis that mu > 29.42 
 Therefore, we have enough evidence at 95% confidence interval to suggest that the average congestion level across the seven cities will be 29.42
 
+## Confidence Intervals
+## define x (variable to analyse)- Annual No. Of Passengers
+X = mergedf.iloc[:,2:3].values
+## create our confidence interval using Student T's at 95% confidence interval
+stats.t.interval(confidence = 0.95, df=len(X), loc=np.mean(X), scale = stats.sem(X))
+At 95% confidence level, the annual number of passengers in the seven countries considered will be between 36438.70 and 79704.77 thousand people. 
 
+## define x (variable to analyse)- Congestion (%)
+X1 = mergedf.iloc[:,3:4].values
+## create our confidence interval using Student T's at 95% confidence interval
+stats.t.interval(confidence = 0.95, df=len(X1), loc=np.mean(X1), scale = stats.sem(X1))
+At 95% confidence level, the average congestion level across the seven countries considered will be between 26.75% and 32.11% people.
 
 
 
