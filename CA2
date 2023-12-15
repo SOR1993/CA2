@@ -184,10 +184,49 @@ sns.histplot(data=mergedf1, x="Congestion (%)", kde=True)
 sns.histplot(data=mergedf1, x="Price of One Litre of Diesel (Euro)", kde=True)
 
 # Statistical Analysis
+
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import math
+
+import statistics as stats
+import scipy.stats as stats
+from statsmodels.stats import weightstats
+
+### Descriptive Statistics
+mergedf.describe()
+
+sns.pairplot(mergedf)
+plt.grid(True, color = "grey", linewidth = "1", linestyle = "-") ## Source https://www.geeksforgeeks.org/grids-in-matplotlib/
+plt.title("Graphs of Various Variables Effecting Congestion in Cities in Europe", fontsize=14)
+
+sns.histplot(data=mergedf, x="Congestion (%)", kde=True)
+
+sns.histplot(data=mergedf, x="Annual No. of Passengers (Thousand)", kde=True)
+
+## Hypothesis Test (Z-Test)
+### Inferential Statistics
+
+X = mergedf["Annual No. of Passengers (Thousand)"]
+passenger_std = X.std()
+#### H0: mu = 5000, H1: mu > 5000 : As the mean of the annual number of passengers is 58071 the alternative hypothesis should be greater than 5000.
+mu = 5000
+
+z_score, p_value = weightstats.ztest(X, value = mu, ddof=1, alternative = 'larger')
+z_score
+p_value
+
+As the p-value is less than alpha we reject the null hypothesis and accept the alternative hypothesis that mu > 5000. Therefore, we have enough evidence to suggest that the annual number of passengers will be greater than 50,000,000 per year in any of the cities tested.
+
+### Parametric/Non Parametric Testing
+from scipy import stats
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+import scipy as scipy
+
+mergedf
+mergedf = mergedf.rename(columns={"Annual No. of Passengers (Thousand)":"Passengers", "Population (thousand)":"Population", "Congestion (%)":"Congestion"})
+mergedf
 
 
