@@ -220,7 +220,7 @@ z_score, p_value = weightstats.ztest(X, value = mu, ddof=1, alternative = 'large
 z_score
 p_value
 As the p-value is greater than alpha, we reject the null hypothesis and accept the alternative hypothesis that mu > 58071. 
-Therefore, we have enough evidence at 5% confidence interval to suggest that the average annual number of passengers will be greater than 58,071,000 across the seven cities.
+Therefore, we have enough evidence at 95% confidence interval to suggest that the average annual number of passengers will be greater than 58,071,000 across the seven cities.
 X = mergedf["Congestion"]
 congestion_std1 = X.std()
 ## H0: mu = 29.42, H1: mu > 29.42 : As the mean of the annual number of passengers is 58071 the alternative hypothesis should be greater than 5000.
@@ -229,7 +229,7 @@ z_score, p_value = weightstats.ztest(X, value = mu, ddof=1, alternative = 'large
 z_score
 p_value
 As the p-value is greater than alpha we accept the null hypothesis and reject the alternative hypothesis that mu > 29.42 
-Therefore, we have enough evidence at 5% confidence interval to suggest that the average congestion level across the seven cities will be 29.42
+Therefore, we have enough evidence at 95% confidence interval to suggest that the average congestion level across the seven cities will be 29.42
 
 
 
