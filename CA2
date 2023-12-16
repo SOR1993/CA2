@@ -249,28 +249,41 @@ from scipy import stats
 stats.norm.interval(0.95, loc=np.mean(X), scale=stats.sem(X))
 Values for normal distribution are very similar to that of the Student T's
 
-
-
-
-## Parametric/Non Parametric Testing
+# Parametric Testing
 from scipy import stats
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 import scipy as scipy
 
-mergedf
-mergedf = mergedf.rename(columns={"Annual No. of Passengers (Thousand)":"Passengers", "Population (thousand)":"Population", "Congestion (%)":"Congestion"})
-mergedf
+## Correlation Analysis
+corr_main = mergedf.drop(columns=["City","Year"])
+corr_main.corr()
+corr = corr_main.corr()
+sns.heatmap(corr, cmap="Blues", annot=True)
+plt.title("Correlations of Variables from Seven European Cities", fontsize=18, loc="center")
 
-## Sharpiro Wilk Test- Checking the conditions for ANOVA
+mergedf = mergedf.rename(columns={"Annual No. of Passengers (Thousand)":"Passengers", "Population (thousand)":"Population", "Congestion (%)":"Congestion"})
+pivot1new = df1.pivot(index="Year", columns="City", values="Passengers")
+pivot1new
+pivot1new.corr()
+corr = pivot1new.corr()
+sns.heatmap(corr, cmap="Blues", annot=True)
+plt.title("Correlations of Annual No. of Passengers from Seven European Cities", fontsize=18, loc="center")
+
+pivot2new
+pivot2new.corr()
+corr = pivot2new.corr()
+sns.heatmap(corr, cmap="Blues", annot=True)
+plt.title("Correlations of Congestion Levels from Seven European Cities", fontsize=18, loc="center")
+
+## ANOVA 
+### Sharpiro Wilk Test- Checking the conditions for ANOVA
 #QQ-plot
 stats.probplot(mergedf.Passengers, plot = plt)
 plt.figure()
 ## Sharpiro Wil Test to test Normality of Data
-
 ## H0: Data comes from normal dist
 ## H1: Data does NOT come from normal dist
-
 stats.shapiro(mergedf.Passengers[mergedf.City=="Dublin"])
 ## p_value is greater than alpha therefore null hypothesis should be accepted.
 ## Evidence suggests that data for Dublin comes from normal distribution
@@ -285,7 +298,6 @@ stats.shapiro(mergedf.Passengers[mergedf.City=="Manchester"])
 #QQ-plot
 stats.probplot(mergedf.Congestion, plot = plt)
 plt.figure()
-
 stats.shapiro(mergedf.Congestion[mergedf.City=="Dublin"])
 ## p_value is greater than alpha therefore null hypothesis should be accepted.
 ## Evidence suggests that data for Dublin comes from normal distribution
@@ -295,7 +307,7 @@ stats.shapiro(mergedf.Congestion[mergedf.City=="Zurich"])
 stats.shapiro(mergedf.Congestion[mergedf.City=="Manchester"])
 stats.shapiro(mergedf.Congestion[mergedf.City=="Edinburgh"])
 stats.shapiro(mergedf.Congestion[mergedf.City=="Glasgow"])
-
+### Preparing the variables
 dublin = mergedf.Congestion[mergedf.City=="Dublin"]
 copenhagen = mergedf.Congestion[mergedf.City=="Copenhagen"]
 porto = mergedf.Congestion[mergedf.City=="Porto"]
@@ -304,21 +316,130 @@ manchester = mergedf.Congestion[mergedf.City=="Manchester"]
 glasgow = mergedf.Congestion[mergedf.City=="Glasgow"]
 edinburgh = mergedf.Congestion[mergedf.City=="Edinburgh"]
 
-## ANOVA (One Way)
 ## Homogenity of the variances ---> Levene Test
 ## H0: the variances are equal
 ## H1: the variances are not equal
 from scipy.stats import levene
+## Levene Test for Homogeinety
 levene(dublin, copenhagen, porto, zurich, edinburgh, manchester, glasgow, center = 'mean')
-## accept null hypothesis as p_value is greater than alpha
 ## H0: muDublin = muCopenhgen = muZurich = muPorto = muManchester = muGlasgow = muEdinburgh
 ## H1: there are at least 2 mu which are different
 
 ## we analyse congestion based on city
+## ANOVA (One Way)
 model = ols('Congestion~City', data=mergedf).fit()
 aov = sm.stats.anova_lm(model, type=2)
 print(aov)
 ## therefore as PR(>F) value which is our p_value is less than alpha then we reject the null hypothesis.
+
+## ANOVA (Two Way)
+## H0: means are equal
+## H1: at least one mean is different
+model2 = ols('Congestion~Year+City', data = mergedf).fit()
+aov2 = sm.stats.anova_lm(model2, type = 2)
+print(aov2)
+## therefore as PR(>F) value which is our p_value is less than alpha then we reject the null hypothesis.
+## Means are not equal based on City and Year of Congestion Data.
+
+# Non-Parametric Tests
+### Kruskal Wallis Test
+new_mergedf_pivot
+## Step One: Hypothesis
+
+## H0: there is no difference between the numbers of passengers in each city
+## H1: there is at least one city that has a different level of passengers
+
+## Step Two: Create Variables
+C= new_mergedf_pivot["Copenhagen"]
+D= new_mergedf_pivot["Dublin"]
+E= new_mergedf_pivot["Edinburgh"]
+G= new_mergedf_pivot["Glasgow"]
+M= new_mergedf_pivot["Manchester"]
+P= new_mergedf_pivot["Porto"]
+Z= new_mergedf_pivot["Zurich"]
+from scipy.stats import kruskal
+stat, p = kruskal(C,D,E,G,M,P,Z)
+print("Statistical Test: ", stat)
+print("p-value= ", p)
+## Therefore, p-value is less than alpha so we reject the null hypothesis.
+## Evidence suggests that there is at least one city that has a different level of passenger
+
+## Step One: Hypothesis
+## H0: there is no difference between the congestion level in each city
+## H1: there is at least one city that has a different congestion level
+## Step Two: Create Variables
+C1= pivot2new["Copenhagen"]
+D1= pivot2new["Dublin"]
+E1= pivot2new["Edinburgh"]
+G1= pivot2new["Glasgow"]
+M1= pivot2new["Manchester"]
+P1= pivot2new["Porto"]
+Z1= pivot2new["Zurich"]
+stat1, p1 = kruskal(C1,D1,E1,G1,M1,P1,Z1)
+print("Statistical Test: ", stat1)
+print("p-value= ", p1)
+## Therefore, p-value is less than alpha so we reject the null hypothesis.
+## Evidence suggests that there is at least one city that has a different level of congestion
+
+## U-Mann Whitman Test
+##Step One: Hypothesis
+## H0: there is no difference between the passenger numbers in cities
+## H1: there is a difference between the passenger numbers in cities
+## Step Two: Creating Variables
+## Step 3: Test
+from scipy.stats import mannwhitneyu
+stat, p = mannwhitneyu(D,C)
+print ("Statistical Test: ", stat)
+print("p-value: ", p)
+stat, p = mannwhitneyu(D,P)
+print ("Statistical Test: ", stat)
+print("p-value: ", p)
+stat, p = mannwhitneyu(D,Z)
+print ("Statistical Test: ", stat)
+print("p-value: ", p)
+stat, p = mannwhitneyu(D,G)
+print ("Statistical Test: ", stat)
+print("p-value: ", p)
+stat, p = mannwhitneyu(D,E)
+print ("Statistical Test: ", stat)
+print("p-value: ", p)
+
+##Step One: Hypothesis
+
+## H0: there is no difference between the congestion levels in cities
+## H1: there is a difference between the congestion levels in cities
+## Step Two: Creating Variables
+## Step 3: Test
+stat, p = mannwhitneyu(D1,C1)
+print ("Statistical Test: ", stat)
+print("p-value: ", p)
+stat, p = mannwhitneyu(D1,M1)
+print ("Statistical Test: ", stat)
+print("p-value: ", p)
+stat, p = mannwhitneyu(D1,G1)
+print ("Statistical Test: ", stat)
+print("p-value: ", p)
+stat, p = mannwhitneyu(D1,E1)
+print ("Statistical Test: ", stat)
+print("p-value: ", p)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
