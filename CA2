@@ -467,10 +467,15 @@ print("Test set score: {:.2f}".format(regression.score(x_test_encoded, y_test)))
 mean_squared_error = np.mean((regression_predict - y)**2)
 # Display the mean square error
 print("Mean Squared Error on test set", mean_squared_error)
+# Use training set to test the Linear Regression model
+regression = LinearRegression().fit(X_train, y_train)
+# predict test set
+y_pred = regression.predict(X_test)
+# values of prediction
+print ("Test predictions: ", y_pred)
 
 #Passenger Data
 pivot1 = mergedf.drop(columns=["Congestion", "Population", "Price of One Litre of Diesel (Euro)"])
-
 ## Extract the features (X) and target (y)
 x = pivot1[['City']].values
 y = pivot1[['Congestion']].values
@@ -494,6 +499,17 @@ print("Test set score: {:.2f}".format(regression.score(x_test_encoded, y_test)))
 mean_squared_error = np.mean((regression_predict - y)**2)
 # Display the mean square error
 print("Mean Squared Error on test set", mean_squared_error)
+
+# Use training set to test prediction using the Linear Regression model
+regression = LinearRegression().fit(X_train, y_train)
+
+# predict test set
+y_pred = regression.predict(X_test)
+
+# values of prediction
+
+print ("Test predictions: '", y_pred)
+
 
 ## kNN Regressor
 from sklearn.neighbors import KNeighborsRegressor
