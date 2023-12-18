@@ -495,17 +495,134 @@ mean_squared_error = np.mean((regression_predict - y)**2)
 # Display the mean square error
 print("Mean Squared Error on test set", mean_squared_error)
 
-## Random Forest
+## kNN Regressor
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import mean_squared_error 
+sns.scatterplot(x=mergedf['Congestion'], y=mergedf['Passengers'], hue=mergedf["City"])
+# Create the independent and dependent variables
+x = mergedf[['Congestion']]
+y = mergedf[['Passengers']]
+from sklearn.model_selection import train_test_split
+
+# Split the data into train and test
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3,random_state = 0)
+
+from sklearn.neighbors import KNeighborsRegressor
+# Declare arrays to store training and test accuracies
+neighbors = np.arange(1, 9)
+train_accuracy =np.empty(len(neighbors))
+test_accuracy = np.empty(len(neighbors))
+for i, k in enumerate(neighbors):
+    # Declare and initialise kNN regressor with k neighbors
+    kNN = KNeighborsRegressor(n_neighbors = k)
+    # Call the method fit() to train the model
+    kNN.fit(x_train, y_train)
+    # Compute accuracy on the training set
+    train_accuracy[i] = kNN.score(x_train, y_train)
+    # Compute accuracy on the test set
+    test_accuracy[i] = kNN.score(x_test, y_test) 
+# Visualise the accuracy based on the number of neighbors
+plt.title('kNN considering different neighbors')
+plt.plot(neighbors, test_accuracy, label = 'Testing Accuracy')
+plt.plot(neighbors, train_accuracy, label = 'Training Accuracy')
+plt.legend()
+plt.xlabel('Number of Neighbors')
+plt.ylabel('Accuracy')
+plt.show()
+
+print("Training set score: {:.2f}".format(kNN.score(x_train, y_train)))
+print("Test set score: {:.2f}".format(kNN.score(x_test, y_test)))
+
+## calculating MSE Source: https://www.datatechnotes.com/2019/04/regression-example-with-k-nearest.html
+pred_y = kNN.predict(x)
+mse = mean_squared_error(y, pred_y)
+print("Mean Squared Error:",mse)
+
+## Principal Component Analysis
+# import the libraries for the cancer datasert
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
-import warnings
-warnings.filterwarnings('ignore')
+import seaborn as sns
+%matplotlib inline
+# Importing standardscalar module 
+from sklearn.preprocessing import StandardScaler
+scalar = StandardScaler()
+# fitting
+scalar.fit(df)
+scaled_data = scalar.transform(df) 
+# Importing PCA
+from sklearn.decomposition import PCA
+# Let's say, components = 2
+pca = PCA(n_components = 2)
+pca.fit(scaled_data)
+x_pca = pca.transform(scaled_data)
+x_pca.shape
+# giving a larger plot
+plt.figure(figsize =(8, 6)
+plt.scatter(x_pca[:, 0], x_pca[:, 1], c = df['Congestion'], cmap ='plasma')
+# labeling x and y axes
+plt.xlabel('First Principal Component')
+plt.ylabel('Second Principal Component')
 
+## Decision Tree Model
+# split dataset in features and target variable
+feature_cols = ['Year', 'Passengers', 'Congestion','Price of One Litre of Diesel (Euro)','Population']
+X = mergedf[feature_cols] # Features
+y = mergedf.City # Target variable
+X, y
+### Splitting Data
+# Split dataset into training set and test set
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1) # 70% training and 30% test
+### Building Decision Tree Model
+# Create Decision Tree classifer object
+clf = DecisionTreeClassifier(max_depth = 3, random_state = 0)
+# Train Decision Tree Classifer
+clf = clf.fit(X_train,y_train)
+#Predict the response for test dataset
+y_pred = clf.predict(X_test)
+### Evaluating Model
+# Model Accuracy, how often is the classifier correct?
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
 
-
-
-
+# column names for dataset
+fn=['Year', 'Passengers', 'Congestion','Price of One Litre of Diesel (Euro)','Population']
+# classes of dataset
+cn=['0','1','2','3','4','5','6']
+# Setting dpi = 300 to make image clearer than default
+fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (4,4), dpi=300)
+tree.plot_tree(clf,
+           feature_names = fn, 
+           class_names=cn,
+           filled = True);
+# In case of any errors, install conda install python-graphviz     on the command line
+### Optimizing Decision Tree Performance
+# Create Decision Tree classifer object
+clf = DecisionTreeClassifier(criterion="entropy", max_depth=3)
+# Train Decision Tree Classifer
+clf = clf.fit(X_train,y_train)
+#Predict the response for test dataset
+y_pred = clf.predict(X_test)
+# Model Accuracy, how often is the classifier correct?
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
+# column names for dataset
+fn=['Year', 'Passengers', 'Congestion','Price of One Litre of Diesel (Euro)','Population']
+# classes of dataset
+cn=['0','1','2','3','4','5','6']
+# Setting dpi = 300 to make image clearer than default
+fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (4,4), dpi=300)
+tree.plot_tree(clf,
+           feature_names = fn, 
+           class_names=cn,
+           filled = True);
+# set the path of your system
+fig.savefig('imagename.png',bbox_inches='tight')
 
 
 
