@@ -425,105 +425,79 @@ stat, p = mannwhitneyu(D1,E1)
 print ("Statistical Test: ", stat)
 print("p-value: ", p)
 
+
 # Machine Learning
-## Linear Regression
-## one hot encoding to help with preparing data for machine learning source: https://www.analyticsvidhya.com/blog/2021/05/how-to-perform-one-hot-encoding-for-multi-categorical-variables/
-for x in newdf.columns:
-#print unique values
-print(x ,':', len(newdf[x].unique()))
-top7 = [x for x in newdf.City.value_counts().sort_values(ascending=False).head(10).index]
-top7
-for label in top7:
-newdf[label] = np.where(newdf["City"]==label,1,0)
-newdf[["City"]+top7]
-## pivot2 to have Year as index City as column head, and congestion as values
-pivot_table = pivot2.pivot_table(index='Year', columns='City', values='Congestion', aggfunc='mean')
-## pivot table to have cities as columns and years as index
-pivot_new_year= pivot_table.T
-## display new table
-print(pivot_new_year)
+## Linear Regression-Congestion Data
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import math
+df = pd.read_csv("Congestion.csv")
+df1 = pd.read_csv("Passengers.csv")
+df2 = pd.read_csv("ManualDataCA2.csv")
 
-# Congestion Data
-## Extract the features (X) and target (y)
-x = pivot2[['City']].values
-y = pivot2[['Congestion']].values
-## Display independent and dependent variables
-print(x.shape, y.shape)
-## import the libraries for LinearRegression
-from sklearn.model_selection import train_test_split
-## Call the train_test_split method to split the data and the splitting is 70% for training and 30% for testing
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 98)
-x.shape, y.shape, x_train.shape, x_test.shape, y_train.shape, y_test.shape
-## import libaray
+import pandas as pd
 from sklearn.linear_model import LinearRegression
-## train the LinearRegression mode by using a method fit() function
-regression = LinearRegression().fit(x_train_encoded, y_train) ## use of encoded as completed previously
-# Display the coefficients
-print(regression.coef_)
-## get scores for test and training sets
-print("Training set score: {:.2f}".format(regression.score(x_train_encoded, y_train)))
-print("Test set score: {:.2f}".format(regression.score(x_test_encoded, y_test)))
-# Calculate the mean square error
-mean_squared_error = np.mean((regression_predict - y)**2)
-# Display the mean square error
-print("Mean Squared Error on test set", mean_squared_error)
-# Use training set to test the Linear Regression model
-regression = LinearRegression().fit(X_train, y_train)
-# predict test set
-y_pred = regression.predict(X_test)
-# values of prediction
-print ("Test predictions: ", y_pred)
+##  year as index 
+data = df.set_index('Year')
+## Create Linear Regression model
+model = LinearRegression()
+## feature extraction - target variable passsengers nums
+X = data.index.values.reshape(-1, 1)  
+y = data.values  
+## Fit the model
+model.fit(X, y)
+## predicting congestion for a given year
+year1 = 2023
+predicted_congestion = model.predict([[year1]])
+print(f"Predicted congestion for the year {year1}: {predicted_congestion}")
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
+y_pred = model.predict(X)
+# Calculate R2 score
+r2 = r2_score(y, y_pred)
+print(f"R2 Score: {r2}")
+y_pred = model.predict(X)
+# Calculate Mean Squared Error
+mse = mean_squared_error(y, y_pred)
+print(f"Mean Squared Error: {mse}")
 
-#Passenger Data
-pivot1 = mergedf.drop(columns=["Congestion", "Population", "Price of One Litre of Diesel (Euro)"])
-## Extract the features (X) and target (y)
-x = pivot1[['City']].values
-y = pivot1[['Congestion']].values
-## Display independent and dependent variables
-print(x.shape, y.shape)
-## import the libraries for LinearRegression
-from sklearn.model_selection import train_test_split
-## Call the train_test_split method to split the data and the splitting is 70% for training and 30% for testing
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 98)
-x.shape, y.shape, x_train.shape, x_test.shape, y_train.shape, y_test.shape
-## import libaray
+## Linear Regression-Passengert Data
+### https://realpython.com/linear-regression-in-python/
+import pandas as pd
 from sklearn.linear_model import LinearRegression
-## train the LinearRegression mode by using a method fit() function
-regression = LinearRegression().fit(x_train_encoded, y_train) ## use of encoded as completed previously
-# Display the coefficients
-print(regression.coef_)
-## get scores for test and training sets
-print("Training set score: {:.2f}".format(regression.score(x_train_encoded, y_train)))
-print("Test set score: {:.2f}".format(regression.score(x_test_encoded, y_test)))
-# Calculate the mean square error
-mean_squared_error = np.mean((regression_predict - y)**2)
-# Display the mean square error
-print("Mean Squared Error on test set", mean_squared_error)
+##  year as index 
+data = df1.set_index('Year')
+## Create Linear Regression model
+model = LinearRegression()
+## feature extraction - target variable passsengers nums
+X = data.index.values.reshape(-1, 1) 
+y = data.values  
+## Fit the model
+model.fit(X, y)
+## predicting passngers no. for a given year
+year = 2023
+predicted_passengers = model.predict([[year]])
+print("Predicted passenger for the year {year}: {predicted_passengers}")
+y_pred = model.predict(X)
+## R2 score
+r2 = r2_score(y, y_pred)
+print(f"R2 Score: {r2}")
+y_pred = model.predict(X)
+## Mean Squared Error
+mse = mean_squared_error(y, y_pred)
+print(f"Mean Squared Error: {mse}")
 
-# Use training set to test prediction using the Linear Regression model
-regression = LinearRegression().fit(X_train, y_train)
-
-# predict test set
-y_pred = regression.predict(X_test)
-
-# values of prediction
-
-print ("Test predictions: '", y_pred)
-
-
-## kNN Regressor
+kNN Regressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import mean_squared_error 
-sns.scatterplot(x=mergedf['Congestion'], y=mergedf['Passengers'], hue=mergedf["City"])
+sns.scatterplot(x=df2['Congestion (%)'], y=df2['Annual No. of Passengers (Thousand)'], hue=df2["City"])
 # Create the independent and dependent variables
-x = mergedf[['Congestion']]
-y = mergedf[['Passengers']]
-from sklearn.model_selection import train_test_split
-
-# Split the data into train and test
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3,random_state = 0)
-
+x = df2[['Congestion (%)']]
+y = df2[['Annual No. of Passengers (Thousand)']]
 from sklearn.neighbors import KNeighborsRegressor
+
 # Declare arrays to store training and test accuracies
 neighbors = np.arange(1, 9)
 train_accuracy =np.empty(len(neighbors))
@@ -545,65 +519,42 @@ plt.legend()
 plt.xlabel('Number of Neighbors')
 plt.ylabel('Accuracy')
 plt.show()
-
 print("Training set score: {:.2f}".format(kNN.score(x_train, y_train)))
 print("Test set score: {:.2f}".format(kNN.score(x_test, y_test)))
-
 ## calculating MSE Source: https://www.datatechnotes.com/2019/04/regression-example-with-k-nearest.html
 pred_y = kNN.predict(x)
 mse = mean_squared_error(y, pred_y)
 print("Mean Squared Error:",mse)
 
-## Principal Component Analysis
-# import the libraries for the cancer datasert
+## Decision Tree Model
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
-%matplotlib inline
-# Importing standardscalar module 
-from sklearn.preprocessing import StandardScaler
-scalar = StandardScaler()
-# fitting
-scalar.fit(df)
-scaled_data = scalar.transform(df) 
-# Importing PCA
-from sklearn.decomposition import PCA
-# Let's say, components = 2
-pca = PCA(n_components = 2)
-pca.fit(scaled_data)
-x_pca = pca.transform(scaled_data)
-x_pca.shape
-# giving a larger plot
-plt.figure(figsize =(8, 6)
-plt.scatter(x_pca[:, 0], x_pca[:, 1], c = df['Congestion'], cmap ='plasma')
-# labeling x and y axes
-plt.xlabel('First Principal Component')
-plt.ylabel('Second Principal Component')
+import matplotlib.pyplot as plt
+import sklearn.metrics as metrics
+import statistics as stats
+import scipy.stats as stats
+from statsmodels.stats import weightstats
 
-## Decision Tree Model
 # split dataset in features and target variable
-feature_cols = ['Year', 'Passengers', 'Congestion','Price of One Litre of Diesel (Euro)','Population']
-X = mergedf[feature_cols] # Features
-y = mergedf.City # Target variable
+feature_cols = ['Year', 'Annual No. of Passengers (Thousand)', 'Congestion (%)','Price of One Litre of Diesel (Euro)','Population (thousand)']
+X = df2[feature_cols] # Features
+y = df2.City # Target variable
 X, y
-### Splitting Data
 # Split dataset into training set and test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1) # 70% training and 30% test
-### Building Decision Tree Model
 # Create Decision Tree classifer object
 clf = DecisionTreeClassifier(max_depth = 3, random_state = 0)
 # Train Decision Tree Classifer
 clf = clf.fit(X_train,y_train)
 #Predict the response for test dataset
 y_pred = clf.predict(X_test)
-### Evaluating Model
-# Model Accuracy, how often is the classifier correct?
-print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
-
 # column names for dataset
 fn=['Year', 'Passengers', 'Congestion','Price of One Litre of Diesel (Euro)','Population']
 # classes of dataset
@@ -618,27 +569,57 @@ tree.plot_tree(clf,
 ### Optimizing Decision Tree Performance
 # Create Decision Tree classifer object
 clf = DecisionTreeClassifier(criterion="entropy", max_depth=3)
+
 # Train Decision Tree Classifer
 clf = clf.fit(X_train,y_train)
+
 #Predict the response for test dataset
 y_pred = clf.predict(X_test)
+
 # Model Accuracy, how often is the classifier correct?
 print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
+
 # column names for dataset
 fn=['Year', 'Passengers', 'Congestion','Price of One Litre of Diesel (Euro)','Population']
 # classes of dataset
 cn=['0','1','2','3','4','5','6']
+
 # Setting dpi = 300 to make image clearer than default
 fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (4,4), dpi=300)
+
 tree.plot_tree(clf,
            feature_names = fn, 
            class_names=cn,
            filled = True);
 # set the path of your system
 fig.savefig('imagename.png',bbox_inches='tight')
-
-
-
+## Principal Component Analysis
+df_PCA = df2.drop(columns=["Year", "City", "Population (thousand)", "Price of One Litre of Diesel (Euro)"])
+df_PCA
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+%matplotlib inline
+# Importing standardscalar module 
+from sklearn.preprocessing import StandardScaler
+scalar = StandardScaler()
+# fitting
+scalar.fit(df_PCA)
+scaled_data = scalar.transform(df_PCA)
+# Importing PCA
+from sklearn.decomposition import PCA
+# Let's say, components = 2
+pca = PCA(n_components = 2)
+pca.fit(scaled_data)
+x_pca = pca.transform(scaled_data)
+x_pca.shape
+# giving a larger plot
+plt.figure(figsize =(8, 6))
+plt.scatter(x_pca[:, 0], x_pca[:, 1], c = df_PCA['Congestion (%)'], cmap ='plasma')
+# labeling x and y axes
+plt.xlabel('First Principal Component')
+plt.ylabel('Second Principal Component')
