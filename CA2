@@ -623,3 +623,40 @@ plt.scatter(x_pca[:, 0], x_pca[:, 1], c = df_PCA['Congestion (%)'], cmap ='plasm
 # labeling x and y axes
 plt.xlabel('First Principal Component')
 plt.ylabel('Second Principal Component')
+
+# Sentiment Analysis
+## VADER sentiment analysis with NLTK
+import warnings
+warnings.filterwarnings('ignore') # We can suppress the warnings
+pip install vaderSentiment
+pip install PyPDF2 nltk
+## Merged Transport Survey Document 20222
+import PyPDF2
+import nltk
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from nltk.tokenize import sent_tokenize
+nltk.download('punkt') ## source:https://realpython.com/python-nltk-sentiment-analysis/
+## https://vadersentiment.readthedocs.io/en/latest/pages/code_and_example.html
+## https://www.analyticsvidhya.com/blog/2022/07/sentiment-analysis-using-python/
+pdf_text = extract_text_from_pdf('Merged Transport Survey Doc 2022.pdf')
+sentiment = SentimentIntensityAnalyzer()
+sent_1 = sentiment.polarity_scores(pdf_text)
+print("Sentiment of pdf:", sent_1)
+sentences = sent_tokenize(pdf_text)
+sentiment = SentimentIntensityAnalyzer()
+for sentence in sentences:
+    vs = sentiment.polarity_scores(sentence)
+    print("{:-<65} {}".format(sentence, str(vs)))
+## Customer Satisfaction Survey 2022
+## https://vadersentiment.readthedocs.io/en/latest/pages/code_and_example.html
+## ## https://www.analyticsvidhya.com/blog/2022/07/sentiment-analysis-using-python/
+pdf_text1 = extract_text_from_pdf('Customer_Satisfaction_Survey_2022.pdf')
+sentiment1 = SentimentIntensityAnalyzer()
+sent_2 = sentiment1.polarity_scores(pdf_text1)
+print("Sentiment of pdf:", sent_2)
+sentiment1 = SentimentIntensityAnalyzer()
+for sentence in pdf_text1:
+    vs = sentiment1.polarity_scores(sentence)
+    print("{:-<65} {}".format(sentence, str(vs)))
+
+
