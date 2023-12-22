@@ -659,4 +659,120 @@ for sentence in pdf_text1:
     vs = sentiment1.polarity_scores(sentence)
     print("{:-<65} {}".format(sentence, str(vs)))
 
+# Interactive Dashboard
+df = pd.read_csv("ManualDataCA2.csv")
+congest = df[['Year', 'City', 'Congestion (%)']]
+passenger = df[['Year', 'City', 'Annual No. of Passengers (Thousand)']]
+conpass = df[['Congestion (%)', 'Annual No. of Passengers (Thousand)', 'City', 'Year']]
+### prepare colors for use throughout in styling the dashboard
+colors = {
+    'background': '#000000',
+    'text': '#FFFFFF'
+}
+### create the instance of the Dash class 
+app = dash.Dash(__name__)
+### create the app layout- set background colours
+
+app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
+
+    html.H1("LIGHT RAIL AND TRAM SERVICES DATA FOR EUROPEAN CITIES", style={'text-align': 'center', 'color': colors['text']}),
+    
+    ### create the dropdown menu for selecting each city
+    dcc.Dropdown(
+        id="dropdown",
+        options=["Dublin", "Copenhagen", "Zurich", "Porto", "Glasgow", "Manchester", "Edinburgh", "All Cities"],
+        value="All Cities",
+        clearable=False,
+        style={'width': "50%",'height':'30px','padding-left':'2%','display':'inline-block'}),
+    
+    ### create the dropdown menu for selecting which graph to view
+    dcc.Dropdown(
+        id="dropdown2",
+        options=["Congestion", "Annual Passenger Numbers", "Congestion vs Passenger Numbers"],
+        value="Select Data:",
+        clearable=False,
+        style={'width': "50%",'height':'30px','padding-left':'2%','display':'inline-block'}),
+    
+    ### needed to create a new .Div for the output graph as I could not get the area surrounding it to change colour otherwise
+    html.Div(style={'backgroundColor': colors['background'],'marginLeft':'2%','marginRight':'2%'}, children=[
+        dcc.Graph(
+            id="graph",
+            style={'backgroundColor': colors['background']}) ### set colour for the background
+])
+])
+### Connect the Plotly graphs with Dash Components
+@app.callback(
+    Output("graph", "figure"), 
+    Input("dropdown", "value"), ### for the dropdown menu to select city
+    Input("dropdown2", "value"))### for the dropdown menu to select what graph to view
+
+### callback function used to update the graph with the required data
+def update_bar_chart(city, slct_var):
+    if city == "All Cities":  ### used an if-else statement to handle the selection of all cities or the selection of a specific cityto view data from all cities on one graph
+        if slct_var == "Congestion": ### when the Congestion variable was selected to view using an if-else statement withinthe main if-else statement
+            df = congest  ### using the congest dataframe created at the beginning
+            y_column = "Congestion (%)"
+            title = "Congestion for All Cities from 2018-2022" 
+            x_title = "Year"
+            y_title = "Congestion (%)"
+            fig = px.bar(df, x="Year", y=y_column, color="City", barmode="group")
+            fig.update_layout(title=title, xaxis_title=x_title, yaxis_title=y_title, paper_bgcolor='#000000', plot_bgcolor='#000000',  font_color="#FFFFFF", title_font_color="#FFFFFF",)            
+            return fig
+        elif slct_var == "Annual Passenger Numbers": ### when the Passengers variable was selected to view
+            df = passenger  
+            y_column = "Annual No. of Passengers (Thousand)"
+            title = "Passenger Numbers for All Cities from 2018-2022"
+            x_title = "Year"
+            y_title = "Passengers (Thousand)"
+            fig = px.bar(df, x="Year", y=y_column, color="City", barmode="group")
+            fig.update_layout(title=title, xaxis_title=x_title, yaxis_title=y_title, paper_bgcolor='#000000', plot_bgcolor='#000000',  font_color="#FFFFFF", title_font_color="#FFFFFF")
+            return fig
+        elif slct_var == "Congestion vs Passenger Numbers": ### when the Passengers vs Congestion graph was selected to view
+            df = conpass  
+            x_column = "Annual No. of Passengers (Thousand)"
+            y_column = "Congestion (%)"  # Assuming this column exists in the passenger dataset
+            x_title = "Passenger Numbers"
+            y_title = "Congestion (%)"
+            fig = px.scatter(df, x=x_column, y=y_column, color='City', hover_data=["Year", "City", "Annual No. of Passengers (Thousand)", y_column])
+            fig.update_layout(title=f"Congestion vs Passenger Numbers for All Cities from 2018-2022", xaxis_title="Passenger Numbers", yaxis_title="Congestion (%)", paper_bgcolor='#000000', plot_bgcolor='#000000',  font_color="#FFFFFF", title_font_color="#FFFFFF")
+            return fig
+        else:
+            return {}
+    else: ### else if a specific city is selected form the dropdown menu for cities
+        
+        if slct_var == "Congestion": ### if-else statement within the main statement 
+            df = congest
+            y_column = "Congestion (%)" 
+            title = f"Congestion in {city} from 2018-2022"
+            x_title = "Year"
+            y_title = "Congestion (%)"
+            mask = df["City"] == city
+            fig = px.bar(df[mask], x="Year", y=y_column, barmode="group")
+            fig.update_layout(title=title, xaxis_title=x_title, yaxis_title=y_title, paper_bgcolor='#000000', plot_bgcolor='#000000',  font_color="#FFFFFF", title_font_color="#FFFFFF")
+            return fig
+        elif slct_var == "Annual Passenger Numbers":
+            df = passenger  
+            y_column = "Annual No. of Passengers (Thousand)"  
+            title = f"Passenger Numbers in {city} from 2018-2022"
+            x_title = "Year"
+            y_title = "Passengers (Thousand)"
+            mask = df["City"] == city
+            fig = px.bar(df[mask], x="Year", y=y_column, barmode="group")
+            fig.update_layout(title=title, xaxis_title=x_title, yaxis_title=y_title, paper_bgcolor='#000000', plot_bgcolor='#000000',  font_color="#FFFFFF", title_font_color="#FFFFFF")
+            return fig
+        elif slct_var == "Congestion vs Passenger Numbers":
+            df = conpass  
+            x_column = "Annual No. of Passengers (Thousand)"
+            y_column = "Congestion (%)" 
+            x_title = "Passenger Numbers"
+            y_title = "Congestion (%)"
+            fig = px.scatter(df[df["City"] == city], x=x_column, y=y_column, hover_data=["Year", "City", "Annual No. of Passengers (Thousand)", y_column])
+            fig.update_layout(title=f"Congestion vs Passenger Numbers in {city} from 2018-2022", xaxis_title="Passenger Numbers", yaxis_title="Congestion (%)", paper_bgcolor='#000000', plot_bgcolor='#000000',  font_color="#FFFFFF", title_font_color="#FFFFFF")
+            return fig
+        else:
+            return {}
+if __name__ == '__main__':
+    app.run_server(debug=True)
+
+
 
